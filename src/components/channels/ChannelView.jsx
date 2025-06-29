@@ -500,7 +500,7 @@ export default function ChannelView({ channel, onBack }) {
     });
   };
 
-  // CRITICAL FIX: Proper emoji reaction handling
+  // CRITICAL FIX: Complete emoji handling rewrite
   const handleReaction = (messageId, emoji) => {
     console.log('Channel handleReaction called with:', { messageId, emoji });
     
@@ -690,6 +690,28 @@ export default function ChannelView({ channel, onBack }) {
     }
   };
 
+  const handleLeaveChannel = () => {
+    toast({
+      title: "Left Channel",
+      description: `You have left #${channel.name}`
+    });
+    onBack();
+  };
+
+  const handleInviteMembers = () => {
+    toast({
+      title: "Invite Link Generated! 🔗",
+      description: "Share the invite link to add new members to this channel"
+    });
+  };
+
+  const handleManageMembers = () => {
+    toast({
+      title: "Member Management",
+      description: "Opening member management panel..."
+    });
+  };
+
   const filteredMessages = searchQuery 
     ? messages.filter(msg => 
         msg.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -711,7 +733,7 @@ export default function ChannelView({ channel, onBack }) {
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-background via-background to-background/95 relative">
-      {/* FIXED: Channel Header with proper Advanced Settings button */}
+      {/* FIXED: Channel Header with proper Channel Info button */}
       <ChannelHeader
         channel={channel}
         channelMembers={channelMembers}
@@ -978,31 +1000,10 @@ export default function ChannelView({ channel, onBack }) {
         channel={channel}
         isOpen={showChannelInfo}
         onClose={() => setShowChannelInfo(false)}
-        onUpdateChannel={(channelId, updates) => {
-          toast({
-            title: "Channel Updated! ⚙️",
-            description: "Channel information has been updated"
-          });
-        }}
-        onLeaveChannel={() => {
-          toast({
-            title: "Left Channel",
-            description: `You have left #${channel.name}`
-          });
-          onBack();
-        }}
-        onInviteMembers={() => {
-          toast({
-            title: "Invite Link Generated! 🔗",
-            description: "Share the invite link to add new members to this channel"
-          });
-        }}
-        onManageMembers={() => {
-          toast({
-            title: "Member Management",
-            description: "Opening member management panel..."
-          });
-        }}
+        onUpdateChannel={handleUpdateChannel}
+        onLeaveChannel={handleLeaveChannel}
+        onInviteMembers={handleInviteMembers}
+        onManageMembers={handleManageMembers}
       />
 
       {/* Advanced Channel Settings */}

@@ -44,7 +44,19 @@ import {
   Info,
   Activity,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  Globe,
+  MapPin,
+  Tag,
+  Bookmark,
+  Heart,
+  ThumbsUp,
+  MessageCircle,
+  Send,
+  Reply,
+  Forward,
+  Zap,
+  Sparkles
 } from 'lucide-react';
 
 export default function ChannelInfoPanel({ 
@@ -67,6 +79,7 @@ export default function ChannelInfoPanel({
   });
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteLink, setInviteLink] = useState('');
+  const [showMemberOptions, setShowMemberOptions] = useState(null);
 
   // Mock data - in a real app this would come from props or API
   const channelStats = {
@@ -77,54 +90,185 @@ export default function ChannelInfoPanel({
     pinnedMessages: 3,
     sharedFiles: 45,
     sharedImages: 128,
-    voiceMinutes: 340
+    voiceMinutes: 340,
+    totalReactions: 892,
+    averageDaily: 45,
+    peakHour: '2:00 PM',
+    mostActiveDay: 'Wednesday'
   };
 
   const recentActivity = [
-    { id: 1, type: 'join', user: 'Alice Cooper', time: '2 hours ago', avatar: '👩‍💼' },
-    { id: 2, type: 'message', user: 'Bob Wilson', time: '3 hours ago', avatar: '👨‍💻' },
-    { id: 3, type: 'file', user: 'Carol Smith', time: '5 hours ago', avatar: '👩‍🎨' },
-    { id: 4, type: 'pin', user: 'David Kim', time: '1 day ago', avatar: '👨‍🎨' }
+    { 
+      id: 1, 
+      type: 'join', 
+      user: 'Alice Cooper', 
+      time: '2 hours ago', 
+      avatar: '👩‍💼',
+      details: 'Joined the channel'
+    },
+    { 
+      id: 2, 
+      type: 'message', 
+      user: 'Bob Wilson', 
+      time: '3 hours ago', 
+      avatar: '👨‍💻',
+      details: 'Sent 5 messages'
+    },
+    { 
+      id: 3, 
+      type: 'file', 
+      user: 'Carol Smith', 
+      time: '5 hours ago', 
+      avatar: '👩‍🎨',
+      details: 'Shared project-specs.pdf'
+    },
+    { 
+      id: 4, 
+      type: 'pin', 
+      user: 'David Kim', 
+      time: '1 day ago', 
+      avatar: '👨‍🎨',
+      details: 'Pinned an important message'
+    },
+    { 
+      id: 5, 
+      type: 'reaction', 
+      user: 'Emma Davis', 
+      time: '1 day ago', 
+      avatar: '👩‍💼',
+      details: 'Added 12 reactions'
+    }
   ];
 
   const pinnedMessages = [
     {
       id: 1,
-      content: `Welcome to #${channel.name}! Please read the channel guidelines.`,
+      content: `Welcome to #${channel?.name}! Please read the channel guidelines and introduce yourself.`,
       author: 'Alex Chen',
       avatar: '👨‍💻',
-      timestamp: '2024-01-15T10:00:00Z'
+      timestamp: '2024-01-15T10:00:00Z',
+      reactions: ['👍', '❤️', '🎉'],
+      reactionCount: 15
     },
     {
       id: 2,
-      content: 'Important: New project deadline is next Friday!',
+      content: 'Important: New project deadline is next Friday! Please update your tasks accordingly.',
       author: 'Sarah Wilson',
       avatar: '👩‍🎨',
-      timestamp: '2024-01-20T14:30:00Z'
+      timestamp: '2024-01-20T14:30:00Z',
+      reactions: ['📅', '✅', '👍'],
+      reactionCount: 8
     },
     {
       id: 3,
-      content: 'Meeting notes from today\'s standup are now available.',
+      content: 'Meeting notes from today\'s standup are now available in the shared folder. Great progress everyone!',
       author: 'Mike Johnson',
       avatar: '🧑‍🚀',
-      timestamp: '2024-01-22T09:15:00Z'
+      timestamp: '2024-01-22T09:15:00Z',
+      reactions: ['📝', '👏', '🚀'],
+      reactionCount: 12
     }
   ];
 
   const channelMembers = [
-    { id: 1, name: 'Alex Chen', avatar: '👨‍💻', role: 'admin', status: 'online', joinDate: '2024-01-15' },
-    { id: 2, name: 'Sarah Wilson', avatar: '👩‍🎨', role: 'moderator', status: 'online', joinDate: '2024-01-16' },
-    { id: 3, name: 'Mike Johnson', avatar: '🧑‍🚀', role: 'member', status: 'away', joinDate: '2024-01-17' },
-    { id: 4, name: 'Emma Davis', avatar: '👩‍💼', role: 'member', status: 'online', joinDate: '2024-01-18' },
-    { id: 5, name: 'James Brown', avatar: '👨‍🔬', role: 'member', status: 'offline', joinDate: '2024-01-19' },
-    { id: 6, name: 'Lisa Wang', avatar: '👩‍🔬', role: 'member', status: 'online', joinDate: '2024-01-20' }
+    { 
+      id: 1, 
+      name: 'Alex Chen', 
+      avatar: '👨‍💻', 
+      role: 'admin', 
+      status: 'online', 
+      joinDate: '2024-01-15',
+      messageCount: 234,
+      lastSeen: 'now'
+    },
+    { 
+      id: 2, 
+      name: 'Sarah Wilson', 
+      avatar: '👩‍🎨', 
+      role: 'moderator', 
+      status: 'online', 
+      joinDate: '2024-01-16',
+      messageCount: 189,
+      lastSeen: '5 minutes ago'
+    },
+    { 
+      id: 3, 
+      name: 'Mike Johnson', 
+      avatar: '🧑‍🚀', 
+      role: 'member', 
+      status: 'away', 
+      joinDate: '2024-01-17',
+      messageCount: 156,
+      lastSeen: '1 hour ago'
+    },
+    { 
+      id: 4, 
+      name: 'Emma Davis', 
+      avatar: '👩‍💼', 
+      role: 'member', 
+      status: 'online', 
+      joinDate: '2024-01-18',
+      messageCount: 98,
+      lastSeen: '10 minutes ago'
+    },
+    { 
+      id: 5, 
+      name: 'James Brown', 
+      avatar: '👨‍🔬', 
+      role: 'member', 
+      status: 'offline', 
+      joinDate: '2024-01-19',
+      messageCount: 67,
+      lastSeen: '2 days ago'
+    },
+    { 
+      id: 6, 
+      name: 'Lisa Wang', 
+      avatar: '👩‍🔬', 
+      role: 'member', 
+      status: 'online', 
+      joinDate: '2024-01-20',
+      messageCount: 45,
+      lastSeen: '30 minutes ago'
+    }
+  ];
+
+  const channelFiles = [
+    {
+      id: 1,
+      name: 'project-specs.pdf',
+      type: 'pdf',
+      size: '2.4 MB',
+      uploadedBy: 'Carol Smith',
+      uploadDate: '2024-01-22',
+      downloads: 12
+    },
+    {
+      id: 2,
+      name: 'design-mockups.zip',
+      type: 'zip',
+      size: '15.7 MB',
+      uploadedBy: 'Sarah Wilson',
+      uploadDate: '2024-01-21',
+      downloads: 8
+    },
+    {
+      id: 3,
+      name: 'meeting-notes.docx',
+      type: 'docx',
+      size: '456 KB',
+      uploadedBy: 'Mike Johnson',
+      uploadDate: '2024-01-20',
+      downloads: 15
+    }
   ];
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Info },
     { id: 'members', label: 'Members', icon: Users },
-    { id: 'settings', label: 'Settings', icon: Settings },
-    { id: 'activity', label: 'Activity', icon: Activity }
+    { id: 'files', label: 'Files', icon: FileText },
+    { id: 'activity', label: 'Activity', icon: Activity },
+    { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   const handleSettingChange = (key, value) => {
@@ -137,7 +281,7 @@ export default function ChannelInfoPanel({
   };
 
   const generateInviteLink = () => {
-    const link = `https://securechat.app/invite/${channel.id}/${Math.random().toString(36).substr(2, 9)}`;
+    const link = `https://securechat.app/invite/${channel?.id}/${Math.random().toString(36).substr(2, 9)}`;
     setInviteLink(link);
     setShowInviteModal(true);
   };
@@ -150,12 +294,25 @@ export default function ChannelInfoPanel({
     });
   };
 
+  const copyChannelInfo = () => {
+    const info = `Channel: #${channel?.name}\nMembers: ${channelStats.totalMembers}\nMessages: ${channelStats.totalMessages}\nCreated: ${formatDate(channelStats.createdDate)}`;
+    navigator.clipboard.writeText(info);
+    toast({
+      title: "Channel Info Copied! 📋",
+      description: "Channel information copied to clipboard"
+    });
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const formatFileSize = (size) => {
+    return size;
   };
 
   const getStatusColor = (status) => {
@@ -181,7 +338,57 @@ export default function ChannelInfoPanel({
       case 'message': return <MessageSquare className="w-4 h-4 text-blue-500" />;
       case 'file': return <FileText className="w-4 h-4 text-purple-500" />;
       case 'pin': return <Pin className="w-4 h-4 text-yellow-500" />;
+      case 'reaction': return <Heart className="w-4 h-4 text-red-500" />;
       default: return <Activity className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  const getFileIcon = (type) => {
+    switch (type) {
+      case 'pdf': return '📄';
+      case 'zip': return '📦';
+      case 'docx': return '📝';
+      case 'xlsx': return '📊';
+      case 'pptx': return '📊';
+      case 'jpg':
+      case 'png':
+      case 'gif': return '🖼️';
+      case 'mp4':
+      case 'mov': return '🎥';
+      case 'mp3':
+      case 'wav': return '🎵';
+      default: return '📎';
+    }
+  };
+
+  const handleMemberAction = (action, member) => {
+    setShowMemberOptions(null);
+    
+    switch (action) {
+      case 'message':
+        toast({
+          title: "Direct Message",
+          description: `Starting conversation with ${member.name}`
+        });
+        break;
+      case 'promote':
+        toast({
+          title: "Member Promoted",
+          description: `${member.name} has been promoted to moderator`
+        });
+        break;
+      case 'kick':
+        toast({
+          title: "Member Removed",
+          description: `${member.name} has been removed from the channel`
+        });
+        break;
+      case 'ban':
+        toast({
+          title: "Member Banned",
+          description: `${member.name} has been banned from the channel`
+        });
+        break;
     }
   };
 
@@ -190,10 +397,10 @@ export default function ChannelInfoPanel({
       {/* Channel Header */}
       <div className="text-center pb-6 border-b border-border">
         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
-          {channel.icon}
+          {channel?.icon}
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">#{channel.name}</h2>
-        <p className="text-muted-foreground mb-4">{channel.description || 'No description available'}</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">#{channel?.name}</h2>
+        <p className="text-muted-foreground mb-4">{channel?.description || 'No description available'}</p>
         
         <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
@@ -204,11 +411,15 @@ export default function ChannelInfoPanel({
             <Calendar className="w-4 h-4" />
             <span>Created {formatDate(channelStats.createdDate)}</span>
           </div>
+          <div className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            <span>Active {channelStats.lastActivity}</span>
+          </div>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Quick Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-muted/30 rounded-lg p-4 text-center">
           <MessageSquare className="w-8 h-8 text-primary mx-auto mb-2" />
           <div className="text-2xl font-bold text-foreground">{channelStats.totalMessages.toLocaleString()}</div>
@@ -231,12 +442,42 @@ export default function ChannelInfoPanel({
         </div>
       </div>
 
+      {/* Channel Analytics */}
+      <div className="bg-muted/20 rounded-lg p-4">
+        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 text-primary" />
+          Channel Analytics
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span className="text-muted-foreground">Daily Average:</span>
+            <span className="ml-2 font-medium">{channelStats.averageDaily} messages</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Peak Hour:</span>
+            <span className="ml-2 font-medium">{channelStats.peakHour}</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Most Active:</span>
+            <span className="ml-2 font-medium">{channelStats.mostActiveDay}</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Total Reactions:</span>
+            <span className="ml-2 font-medium">{channelStats.totalReactions}</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Voice Minutes:</span>
+            <span className="ml-2 font-medium">{channelStats.voiceMinutes}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Pinned Messages */}
       {pinnedMessages.length > 0 && (
         <div>
           <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
             <Pin className="w-4 h-4 text-yellow-500" />
-            Pinned Messages
+            Pinned Messages ({pinnedMessages.length})
           </h3>
           <div className="space-y-3">
             {pinnedMessages.map((message) => (
@@ -251,6 +492,12 @@ export default function ChannelInfoPanel({
                       <span className="text-xs text-muted-foreground">
                         {new Date(message.timestamp).toLocaleDateString()}
                       </span>
+                      <div className="flex items-center gap-1">
+                        {message.reactions.map((reaction, idx) => (
+                          <span key={idx} className="text-xs">{reaction}</span>
+                        ))}
+                        <span className="text-xs text-muted-foreground">+{message.reactionCount}</span>
+                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground">{message.content}</p>
                   </div>
@@ -274,16 +521,10 @@ export default function ChannelInfoPanel({
         <Button
           variant="outline"
           className="flex items-center gap-2"
-          onClick={() => {
-            navigator.clipboard.writeText(`#${channel.name}`);
-            toast({
-              title: "Channel Name Copied! 📋",
-              description: "Channel name copied to clipboard"
-            });
-          }}
+          onClick={copyChannelInfo}
         >
           <Copy className="w-4 h-4" />
-          Copy Name
+          Copy Info
         </Button>
       </div>
     </div>
@@ -317,14 +558,156 @@ export default function ChannelInfoPanel({
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="capitalize">{member.role}</span>
                   <span>•</span>
+                  <span>{member.messageCount} messages</span>
+                  <span>•</span>
                   <span>Joined {formatDate(member.joinDate)}</span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Last seen: {member.lastSeen}
                 </div>
               </div>
             </div>
             
-            <Button variant="ghost" size="icon" className="w-8 h-8">
-              <MoreVertical className="w-4 h-4" />
+            <div className="relative">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="w-8 h-8"
+                onClick={() => setShowMemberOptions(showMemberOptions === member.id ? null : member.id)}
+              >
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+
+              {showMemberOptions === member.id && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg p-1 z-10 min-w-[140px]"
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => handleMemberAction('message', member)}
+                  >
+                    <MessageCircle className="w-3 h-3 mr-2" />
+                    Message
+                  </Button>
+                  {member.role === 'member' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start"
+                      onClick={() => handleMemberAction('promote', member)}
+                    >
+                      <Crown className="w-3 h-3 mr-2" />
+                      Promote
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-destructive"
+                    onClick={() => handleMemberAction('kick', member)}
+                  >
+                    <UserMinus className="w-3 h-3 mr-2" />
+                    Remove
+                  </Button>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderFilesTab = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-foreground">Shared Files ({channelFiles.length})</h3>
+        <Button size="sm" onClick={() => toast({ title: "Upload File", description: "File upload feature coming soon!" })}>
+          <Upload className="w-4 h-4 mr-2" />
+          Upload
+        </Button>
+      </div>
+
+      <div className="space-y-2">
+        {channelFiles.map((file) => (
+          <div key={file.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-lg">
+                {getFileIcon(file.type)}
+              </div>
+              <div>
+                <div className="font-medium text-foreground">{file.name}</div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{formatFileSize(file.size)}</span>
+                  <span>•</span>
+                  <span>by {file.uploadedBy}</span>
+                  <span>•</span>
+                  <span>{formatDate(file.uploadDate)}</span>
+                  <span>•</span>
+                  <span>{file.downloads} downloads</span>
+                </div>
+              </div>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-8 h-8"
+              onClick={() => toast({ title: "Download Started", description: `Downloading ${file.name}` })}
+            >
+              <Download className="w-4 h-4" />
             </Button>
+          </div>
+        ))}
+      </div>
+
+      {channelFiles.length === 0 && (
+        <div className="text-center py-8">
+          <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">No files shared yet</p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderActivityTab = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-foreground">Recent Activity</h3>
+        <div className="text-sm text-muted-foreground">Last updated: {channelStats.lastActivity}</div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-muted/30 rounded-lg p-3 text-center">
+          <TrendingUp className="w-6 h-6 text-green-500 mx-auto mb-1" />
+          <div className="text-lg font-bold text-foreground">+{channelStats.averageDaily}</div>
+          <div className="text-xs text-muted-foreground">Messages today</div>
+        </div>
+        <div className="bg-muted/30 rounded-lg p-3 text-center">
+          <Users className="w-6 h-6 text-blue-500 mx-auto mb-1" />
+          <div className="text-lg font-bold text-foreground">85%</div>
+          <div className="text-xs text-muted-foreground">Active members</div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {recentActivity.map((activity) => (
+          <div key={activity.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm">
+              {activity.avatar}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                {getActivityIcon(activity.type)}
+                <span className="text-sm font-medium text-foreground">{activity.user}</span>
+                <span className="text-sm text-muted-foreground">{activity.details}</span>
+              </div>
+              <div className="text-xs text-muted-foreground">{activity.time}</div>
+            </div>
           </div>
         ))}
       </div>
@@ -414,11 +797,15 @@ export default function ChannelInfoPanel({
             <Archive className="w-4 h-4 mr-2" />
             Archive Channel
           </Button>
+          <Button variant="outline" className="w-full justify-start">
+            <Bookmark className="w-4 h-4 mr-2" />
+            Bookmark Channel
+          </Button>
           <Button variant="outline" className="w-full justify-start text-destructive">
             <Flag className="w-4 h-4 mr-2" />
             Report Channel
           </Button>
-          <Button variant="destructive" className="w-full justify-start">
+          <Button variant="destructive" className="w-full justify-start" onClick={onLeaveChannel}>
             <UserMinus className="w-4 h-4 mr-2" />
             Leave Channel
           </Button>
@@ -427,52 +814,7 @@ export default function ChannelInfoPanel({
     </div>
   );
 
-  const renderActivityTab = () => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-foreground">Recent Activity</h3>
-        <div className="text-sm text-muted-foreground">Last updated: {channelStats.lastActivity}</div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-muted/30 rounded-lg p-3 text-center">
-          <TrendingUp className="w-6 h-6 text-green-500 mx-auto mb-1" />
-          <div className="text-lg font-bold text-foreground">+12</div>
-          <div className="text-xs text-muted-foreground">Messages today</div>
-        </div>
-        <div className="bg-muted/30 rounded-lg p-3 text-center">
-          <BarChart3 className="w-6 h-6 text-blue-500 mx-auto mb-1" />
-          <div className="text-lg font-bold text-foreground">85%</div>
-          <div className="text-xs text-muted-foreground">Active members</div>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {recentActivity.map((activity) => (
-          <div key={activity.id} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm">
-              {activity.avatar}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                {getActivityIcon(activity.type)}
-                <span className="text-sm font-medium text-foreground">{activity.user}</span>
-                <span className="text-sm text-muted-foreground">
-                  {activity.type === 'join' && 'joined the channel'}
-                  {activity.type === 'message' && 'sent a message'}
-                  {activity.type === 'file' && 'shared a file'}
-                  {activity.type === 'pin' && 'pinned a message'}
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground">{activity.time}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  if (!isOpen) return null;
+  if (!isOpen || !channel) return null;
 
   return (
     <>
@@ -486,7 +828,7 @@ export default function ChannelInfoPanel({
           initial={{ scale: 0.9, opacity: 0, x: 300 }}
           animate={{ scale: 1, opacity: 1, x: 0 }}
           exit={{ scale: 0.9, opacity: 0, x: 300 }}
-          className="bg-card border border-border rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+          className="bg-card border border-border rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border bg-card/50 backdrop-blur-sm">
@@ -537,8 +879,9 @@ export default function ChannelInfoPanel({
               >
                 {activeTab === 'overview' && renderOverviewTab()}
                 {activeTab === 'members' && renderMembersTab()}
-                {activeTab === 'settings' && renderSettingsTab()}
+                {activeTab === 'files' && renderFilesTab()}
                 {activeTab === 'activity' && renderActivityTab()}
+                {activeTab === 'settings' && renderSettingsTab()}
               </motion.div>
             </AnimatePresence>
           </div>
