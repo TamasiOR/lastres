@@ -481,6 +481,7 @@ button[data-emoji] span,
   right: 0 !important;
   z-index: 9999 !important;
   transform-origin: bottom right !important;
+  bottom: 0 !important;
 }
 
 /* Ensure chat emoji picker appears above all other content */
