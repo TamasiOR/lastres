@@ -358,9 +358,8 @@ export default function ChatArea() {
                         transition={{ duration: 0.2 }}
                         className="absolute bottom-full right-0 mb-2 z-[9999]"
                         style={{
-                          position: 'absolute',
-                          bottom: '-100%',
-                          top: '100%',
+                          position: 'top',
+                          bottom: '100%',
                           right: '0',
                           marginBottom: '8px',
                           zIndex: 9999
