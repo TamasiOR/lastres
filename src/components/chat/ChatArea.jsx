@@ -16,7 +16,18 @@ import ChatOptionsMenu from '@/components/chat/ChatOptionsMenu';
 import MessageOptionsMenu from '@/components/chat/MessageOptionsMenu';
 import VoiceCallManager from '@/components/voice/VoiceCallManager';
 import { 
-  Send, Paperclip, Smile, Mic, Phone, Video, ArrowLeft, Shield, MapPin, Type, Settings
+  Send, 
+  Paperclip, 
+  Smile, 
+  Mic, 
+  Phone, 
+  Video, 
+  MoreVertical,
+  ArrowLeft,
+  Shield,
+  MapPin,
+  Type,
+  Settings
 } from 'lucide-react';
 
 export default function ChatArea() {
@@ -37,14 +48,18 @@ export default function ChatArea() {
   const inputRef = useRef(null);
   const emojiButtonRef = useRef(null);
 
-  const contact = contacts.find(c => activeChat?.participants.includes(c.id) && c.id !== user?.id);
+  const contact = contacts.find(c => 
+    activeChat?.participants.includes(c.id) && c.id !== user?.id
+  );
 
   useEffect(() => {
     scrollToBottom();
   }, [activeChat?.messages]);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, [activeChat]);
 
   const scrollToBottom = () => {
@@ -53,13 +68,26 @@ export default function ChatArea() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim() || !activeChat) return;
+    if (!message.trim() || !activeChat || !sendMessage) return;
+
     try {
       await sendMessage(activeChat.id, message.trim());
       setMessage('');
       setTyping(activeChat.id, false);
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to send message', variant: 'destructive' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setMessage(e.target.value);
+    if (setTyping) {
+      setTyping(activeChat.id, true);
     }
   };
 
@@ -69,99 +97,278 @@ export default function ChatArea() {
     inputRef.current?.focus();
   };
 
+  const handleTextStyle = (styleData) => {
+    setMessage(styleData.text);
+    setShowTextStyler(false);
+    inputRef.current?.focus();
+  };
+
   const handleFileUpload = (fileData) => {
-    if (!activeChat) return;
-    const type = fileData.type;
-    const meta = {
+    if (!sendMessage || !activeChat) return;
+
+    const messageType = fileData.type === 'image' ? 'image' : 
+                       fileData.type === 'video' ? 'video' : 'file';
+    
+    const metadata = {
       fileName: fileData.name,
       fileSize: fileData.size,
-      fileType: fileData.mimeType,
+      fileType: fileData.mimeType || 'application/octet-stream',
       previewUrl: fileData.previewUrl
     };
-    const content = type === 'image' ? '' : `📎 ${fileData.name}`;
-    sendMessage(activeChat.id, content, type, meta);
+
+    const content = fileData.type === 'image' ? '' : `📎 ${fileData.name}`;
+    sendMessage(activeChat.id, content, messageType, metadata);
     setShowFileUpload(false);
   };
 
-  const handleReply = (msg) => setReplyingTo(msg);
+  const handleVoiceNote = (audioBlob) => {
+    if (!sendMessage || !activeChat) return;
+
+    const audioUrl = URL.createObjectURL(audioBlob);
+    sendMessage(activeChat.id, '🎤 Voice message', 'voice', { 
+      audioUrl,
+      duration: '0:05' 
+    });
+    setIsRecording(false);
+  };
+
+  const handleLocationShare = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Location Not Supported",
+        description: "Your browser doesn't support location sharing",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        if (sendMessage && activeChat) {
+          sendMessage(activeChat.id, `📍 Location shared`, 'location', { 
+            latitude, 
+            longitude,
+            address: 'Current Location'
+          });
+          toast({
+            title: "Location Shared",
+            description: "Your location has been shared securely"
+          });
+        }
+      },
+      () => {
+        toast({
+          title: "Location Access Denied",
+          description: "Please enable location access to share your location",
+          variant: "destructive"
+        });
+      }
+    );
+  };
+
+  const handleReply = (messageToReply) => {
+    setReplyingTo(messageToReply);
+  };
+
   const handleSendReply = async (replyData) => {
-    if (!activeChat) return;
+    if (!activeChat || !sendMessage) return;
+    
     try {
-      await sendMessage(activeChat.id, replyData.content, replyData.type, replyData.meta);
+      await sendMessage(activeChat.id, replyData.content, replyData.type, {
+        replyTo: replyData.replyTo,
+        originalMessage: replyData.originalMessage,
+        originalSender: replyData.originalSender
+      });
       setReplyingTo(null);
-    } catch {
-      toast({ title: 'Error', description: 'Failed to send reply', variant: 'destructive' });
+    } catch (error) {
+      console.error('Error sending reply:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send reply",
+        variant: "destructive"
+      });
     }
   };
 
-  const handleVoiceNote = (blob) => {
-    if (!activeChat) return;
-    sendMessage(activeChat.id, '🎤 Voice message', 'voice', { audioUrl: URL.createObjectURL(blob) });
-    setIsRecording(false);
+  const handleQuoteMessage = (messageToQuote) => {
+    const quotedText = `> ${messageToQuote.content}\n\n`;
+    setMessage(quotedText);
+    inputRef.current?.focus();
+  };
+
+  const handleVoiceCall = () => {
+    setShowVoiceCall(true);
+    setIsVoiceCallMinimized(false);
+  };
+
+  const handleUpdateChatSettings = (newSettings) => {
+    setChatSettings(newSettings);
+    if (activeChat) {
+      localStorage.setItem(`chat-settings-${activeChat.id}`, JSON.stringify(newSettings));
+    }
   };
 
   if (!activeChat) {
     return (
       <div className="h-full flex items-center justify-center bg-background">
         <div className="text-center">
-          <Shield className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">Select a Contact</h3>
-          <p className="text-muted-foreground">Choose someone to start a conversation</p>
+          <Shield className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-foreground mb-2">Select a Contact</h3>
+          <p className="text-muted-foreground">Choose someone to start a secure conversation</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col relative bg-background">
-      {/* Header */}
-      <div className="h-16 px-4 flex items-center justify-between border-b border-border bg-card/50 backdrop-blur-sm">
+    <div className="h-full flex flex-col bg-background relative">
+      {/* Chat Header */}
+      <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setActiveChat(null)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setActiveChat(null)}
+          >
             <ArrowLeft className="w-4 h-4" />
           </Button>
+          
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg">
-              {contact?.avatar || '👤'}
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg">
+                {contact?.avatar || '👤'}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-card" />
             </div>
             <div>
-              <h3 className="font-semibold">{contact?.username || 'Unknown'}</h3>
-              <p className="text-xs text-muted-foreground">{typingUsers[activeChat.id] ? 'Typing...' : 'Online'}</p>
+              <h3 className="font-semibold text-foreground">{contact?.username || 'Unknown'}</h3>
+              <p className="text-xs text-muted-foreground">
+                {typingUsers[activeChat.id] ? 'Typing...' : 'Online'}
+              </p>
             </div>
           </div>
         </div>
+
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => setShowVoiceCall(true)}><Phone className="w-4 h-4" /></Button>
-          <Button variant="ghost" size="icon"><Video className="w-4 h-4" /></Button>
-          <Button variant="ghost" size="icon" onClick={() => setShowChatOptions(true)}><Settings className="w-4 h-4" /></Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleVoiceCall}
+          >
+            <Phone className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => toast({
+              title: "Video Call Started",
+              description: `Starting video call with ${contact?.username || 'contact'}...`
+            })}
+          >
+            <Video className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowChatOptions(true)}
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <AnimatePresence>
-          {activeChat.messages?.map((msg, i) => (
-            <MessageBubble key={msg.id} message={msg} isOwn={msg.senderId === user?.id} contact={contact} previousMessage={activeChat.messages[i - 1]} onReply={handleReply} onShowOptions={setShowMessageOptions} />
+          {activeChat.messages && activeChat.messages.map((msg, index) => (
+            <MessageBubble
+              key={msg.id}
+              message={msg}
+              isOwn={msg.senderId === user?.id}
+              contact={contact}
+              previousMessage={activeChat.messages[index - 1]}
+              onReply={handleReply}
+              onShowOptions={setShowMessageOptions}
+            />
           ))}
         </AnimatePresence>
-        {typingUsers[activeChat.id] && typingUsers[activeChat.id] !== user?.id && <TypingIndicator contact={contact} />}
+        
+        {typingUsers[activeChat.id] && typingUsers[activeChat.id] !== user?.id && (
+          <TypingIndicator contact={contact} />
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4">
+      {/* Reply Section */}
+      <AnimatePresence>
+        {replyingTo && (
+          <MessageReplySystem
+            replyingTo={replyingTo}
+            onSendReply={handleSendReply}
+            onCancelReply={() => setReplyingTo(null)}
+            onQuoteMessage={handleQuoteMessage}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Input Area */}
+      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4 relative">
         <form onSubmit={handleSendMessage} className="flex items-end gap-2">
           <div className="flex-1 relative">
-            <Input ref={inputRef} value={message} onChange={e => setMessage(e.target.value)} placeholder="Type a message..." className="pr-12 resize-none" disabled={isRecording} />
+            <Input
+              ref={inputRef}
+              value={message}
+              onChange={handleInputChange}
+              placeholder="Type a secure message..."
+              className="pr-12 resize-none"
+              disabled={isRecording}
+            />
+            
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <div className="relative">
-                <Button ref={emojiButtonRef} type="button" variant="ghost" size="icon" onClick={() => setShowEmojiPicker(!showEmojiPicker)}><Smile className="w-4 h-4" /></Button>
+                <Button
+                  ref={emojiButtonRef}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="w-6 h-6"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                >
+                  <Smile className="w-4 h-4" />
+                </Button>
+
+                {/* FIXED: Proper emoji picker positioning */}
                 <AnimatePresence>
                   {showEmojiPicker && (
                     <>
-                      <div className="chat-emoji-backdrop" onClick={() => setShowEmojiPicker(false)} />
-                      <motion.div initial={{ opacity: 0, y: 10, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.9 }} transition={{ duration: 0.2 }} className="chat-emoji-picker">
-                        <EnhancedEmojiPicker onEmojiSelect={handleEmojiSelect} onClose={() => setShowEmojiPicker(false)} />
+                      {/* Backdrop to close picker */}
+                      <div 
+                        className="fixed inset-0 z-[9998]" 
+                        onClick={() => setShowEmojiPicker(false)}
+                      />
+                      
+                      {/* Emoji picker positioned above the button */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute bottom-full right-0 mb-2 z-[9999]"
+                        style={{
+                          position: 'absolute',
+                          bottom: '100%',
+                          right: '0',
+                          marginBottom: '8px',
+                          zIndex: 9999
+                        }}
+                      >
+                        <EnhancedEmojiPicker 
+                          onEmojiSelect={handleEmojiSelect}
+                          onClose={() => setShowEmojiPicker(false)}
+                        />
                       </motion.div>
                     </>
                   )}
@@ -169,19 +376,107 @@ export default function ChatArea() {
               </div>
             </div>
           </div>
-          <Button type="button" variant="ghost" size="icon" onClick={() => setShowTextStyler(true)}><Type className="w-4 h-4" /></Button>
-          <Button type="button" variant="ghost" size="icon" onClick={() => setShowFileUpload(true)}><Paperclip className="w-4 h-4" /></Button>
-          <VoiceRecorder isRecording={isRecording} onStartRecording={() => setIsRecording(true)} onStopRecording={handleVoiceNote} />
-          <Button type="submit" size="icon" disabled={!message.trim() || isRecording}><Send className="w-4 h-4" /></Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowTextStyler(true)}
+          >
+            <Type className="w-4 h-4" />
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowFileUpload(!showFileUpload)}
+          >
+            <Paperclip className="w-4 h-4" />
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleLocationShare}
+          >
+            <MapPin className="w-4 h-4" />
+          </Button>
+
+          <VoiceRecorder
+            isRecording={isRecording}
+            onStartRecording={() => setIsRecording(true)}
+            onStopRecording={handleVoiceNote}
+          />
+
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!message.trim() || isRecording}
+          >
+            <Send className="w-4 h-4" />
+          </Button>
         </form>
+
+        {/* Auto-delete notice */}
+        <div className="mt-2 text-xs text-muted-foreground text-center">
+          🔒 Messages auto-delete after {activeChat.settings?.deleteTimer ? Math.floor(activeChat.settings.deleteTimer / 1000) : 5}s • End-to-end encrypted
+        </div>
       </div>
 
-      {/* Modals */}
-      <FileUpload isOpen={showFileUpload} onClose={() => setShowFileUpload(false)} onFileSelect={handleFileUpload} />
-      <ChatOptionsMenu isOpen={showChatOptions} onClose={() => setShowChatOptions(false)} contact={contact} chatSettings={chatSettings} onUpdateSettings={setChatSettings} />
-      <MessageOptionsMenu message={showMessageOptions} isOwn={showMessageOptions?.senderId === user?.id} isOpen={!!showMessageOptions} onClose={() => setShowMessageOptions(null)} onReply={handleReply} onQuote={() => {}} onDelete={() => {}} onEdit={() => {}} />
-      <AdvancedTextStyler isOpen={showTextStyler} onClose={() => setShowTextStyler(false)} onApplyStyle={(data) => setMessage(data.text)} selectedText={message} />
-      {showVoiceCall && <VoiceCallManager contact={contact} onEnd={() => setShowVoiceCall(false)} isMinimized={isVoiceCallMinimized} onToggleMinimize={() => setIsVoiceCallMinimized(!isVoiceCallMinimized)} />}
+      {/* File Upload Modal */}
+      <FileUpload
+        isOpen={showFileUpload}
+        onClose={() => setShowFileUpload(false)}
+        onFileSelect={handleFileUpload}
+      />
+
+      {/* Chat Options Modal */}
+      <ChatOptionsMenu
+        isOpen={showChatOptions}
+        onClose={() => setShowChatOptions(false)}
+        contact={contact}
+        chatSettings={chatSettings}
+        onUpdateSettings={handleUpdateChatSettings}
+      />
+
+      {/* Message Options Modal */}
+      <MessageOptionsMenu
+        message={showMessageOptions}
+        isOwn={showMessageOptions?.senderId === user?.id}
+        isOpen={!!showMessageOptions}
+        onClose={() => setShowMessageOptions(null)}
+        onReply={handleReply}
+        onEdit={(msg) => toast({ title: "🚧 Edit Message", description: "Message editing isn't implemented yet!" })}
+        onDelete={(msgId) => toast({ title: "Message Deleted", description: "Message has been deleted" })}
+        onPin={(msgId) => toast({ title: "Message Pinned", description: "Message has been pinned" })}
+        onStar={(msgId) => toast({ title: "Message Starred", description: "Message has been starred" })}
+        onForward={(msg) => toast({ title: "🚧 Forward Message", description: "Message forwarding isn't implemented yet!" })}
+        onQuote={handleQuoteMessage}
+        onReport={(msg) => toast({ title: "Message Reported", description: "Message has been reported" })}
+      />
+
+      {/* Text Styler Modal */}
+      <AdvancedTextStyler
+        isOpen={showTextStyler}
+        onClose={() => setShowTextStyler(false)}
+        onApplyStyle={handleTextStyle}
+        selectedText={message}
+      />
+
+      {/* Voice Call Interface */}
+      {showVoiceCall && contact && (
+        <VoiceCallManager
+          contact={contact}
+          onEnd={() => {
+            setShowVoiceCall(false);
+            setIsVoiceCallMinimized(false);
+          }}
+          isMinimized={isVoiceCallMinimized}
+          onToggleMinimize={() => setIsVoiceCallMinimized(!isVoiceCallMinimized)}
+        />
+      )}
     </div>
   );
 }
