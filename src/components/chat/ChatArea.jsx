@@ -46,10 +46,9 @@ export default function ChatArea() {
   const [chatSettings, setChatSettings] = useState({});
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const emojiButtonRef = useRef(null);
 
   const contact = contacts.find(c => 
-    activeChat?.participants.includes(c.id) && c.id !== user?.id
+    activeChat?.participants.includes(c.id) && c.id !== user.id
   );
 
   useEffect(() => {
@@ -68,27 +67,16 @@ export default function ChatArea() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim() || !activeChat || !sendMessage) return;
+    if (!message.trim() || !activeChat) return;
 
-    try {
-      await sendMessage(activeChat.id, message.trim());
-      setMessage('');
-      setTyping(activeChat.id, false);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send message",
-        variant: "destructive"
-      });
-    }
+    await sendMessage(activeChat.id, message.trim());
+    setMessage('');
+    setTyping(activeChat.id, false);
   };
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
-    if (setTyping) {
-      setTyping(activeChat.id, true);
-    }
+    setTyping(activeChat.id, true);
   };
 
   const handleEmojiSelect = (emoji) => {
@@ -103,49 +91,35 @@ export default function ChatArea() {
     inputRef.current?.focus();
   };
 
-  const handleFileUpload = (fileData) => {
-    if (!sendMessage || !activeChat) return;
-
-    const messageType = fileData.type === 'image' ? 'image' : 
-                       fileData.type === 'video' ? 'video' : 'file';
+  const handleFileUpload = (file) => {
+    const messageType = file.type === 'image' ? 'image' : 
+                       file.type === 'video' ? 'video' : 'file';
     
     const metadata = {
-      fileName: fileData.name,
-      fileSize: fileData.size,
-      fileType: fileData.mimeType || 'application/octet-stream',
-      previewUrl: fileData.previewUrl
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type || 'application/octet-stream'
     };
 
-    const content = fileData.type === 'image' ? '' : `📎 ${fileData.name}`;
+    if (file.previewUrl) {
+      metadata.previewUrl = file.previewUrl;
+    }
+
+    const content = file.type === 'image' ? '' : `📎 ${file.name}`;
     sendMessage(activeChat.id, content, messageType, metadata);
     setShowFileUpload(false);
   };
 
   const handleVoiceNote = (audioBlob) => {
-    if (!sendMessage || !activeChat) return;
-
-    const audioUrl = URL.createObjectURL(audioBlob);
-    sendMessage(activeChat.id, '🎤 Voice message', 'voice', { 
-      audioUrl,
-      duration: '0:05' 
-    });
+    sendMessage(activeChat.id, '🎤 Voice message', 'voice', { duration: '0:05' });
     setIsRecording(false);
   };
 
   const handleLocationShare = () => {
-    if (!navigator.geolocation) {
-      toast({
-        title: "Location Not Supported",
-        description: "Your browser doesn't support location sharing",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        if (sendMessage && activeChat) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
           sendMessage(activeChat.id, `📍 Location shared`, 'location', { 
             latitude, 
             longitude,
@@ -155,16 +129,22 @@ export default function ChatArea() {
             title: "Location Shared",
             description: "Your location has been shared securely"
           });
+        },
+        () => {
+          toast({
+            title: "Location Access Denied",
+            description: "Please enable location access to share your location",
+            variant: "destructive"
+          });
         }
-      },
-      () => {
-        toast({
-          title: "Location Access Denied",
-          description: "Please enable location access to share your location",
-          variant: "destructive"
-        });
-      }
-    );
+      );
+    } else {
+      toast({
+        title: "Location Not Supported",
+        description: "Your browser doesn't support location sharing",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleReply = (messageToReply) => {
@@ -172,23 +152,12 @@ export default function ChatArea() {
   };
 
   const handleSendReply = async (replyData) => {
-    if (!activeChat || !sendMessage) return;
-    
-    try {
-      await sendMessage(activeChat.id, replyData.content, replyData.type, {
-        replyTo: replyData.replyTo,
-        originalMessage: replyData.originalMessage,
-        originalSender: replyData.originalSender
-      });
-      setReplyingTo(null);
-    } catch (error) {
-      console.error('Error sending reply:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send reply",
-        variant: "destructive"
-      });
-    }
+    if (!activeChat) return;
+    await sendMessage(activeChat.id, replyData.content, 'reply', {
+      replyTo: replyData.replyTo,
+      originalMessage: replyData.originalMessage,
+      originalSender: replyData.originalSender
+    });
   };
 
   const handleQuoteMessage = (messageToQuote) => {
@@ -204,9 +173,8 @@ export default function ChatArea() {
 
   const handleUpdateChatSettings = (newSettings) => {
     setChatSettings(newSettings);
-    if (activeChat) {
-      localStorage.setItem(`chat-settings-${activeChat.id}`, JSON.stringify(newSettings));
-    }
+    // Save to localStorage or send to backend
+    localStorage.setItem(`chat-settings-${activeChat.id}`, JSON.stringify(newSettings));
   };
 
   if (!activeChat) {
@@ -222,7 +190,7 @@ export default function ChatArea() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background relative">
+    <div className="h-full flex flex-col bg-background">
       {/* Chat Header */}
       <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
@@ -238,12 +206,12 @@ export default function ChatArea() {
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg">
-                {contact?.avatar || '👤'}
+                {contact?.avatar}
               </div>
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-card" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">{contact?.username || 'Unknown'}</h3>
+              <h3 className="font-semibold text-foreground">{contact?.username}</h3>
               <p className="text-xs text-muted-foreground">
                 {typingUsers[activeChat.id] ? 'Typing...' : 'Online'}
               </p>
@@ -264,7 +232,7 @@ export default function ChatArea() {
             size="icon"
             onClick={() => toast({
               title: "Video Call Started",
-              description: `Starting video call with ${contact?.username || 'contact'}...`
+              description: `Starting video call with ${contact?.username}...`
             })}
           >
             <Video className="w-4 h-4" />
@@ -282,20 +250,20 @@ export default function ChatArea() {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <AnimatePresence>
-          {activeChat.messages && activeChat.messages.map((msg, index) => (
+          {activeChat.messages.map((msg, index) => (
             <MessageBubble
               key={msg.id}
               message={msg}
-              isOwn={msg.senderId === user?.id}
+              isOwn={msg.senderId === user.id}
               contact={contact}
               previousMessage={activeChat.messages[index - 1]}
-              onReply={handleReply}
-              onShowOptions={setShowMessageOptions}
+              onReply={() => handleReply(msg)}
+              onShowOptions={() => setShowMessageOptions(msg)}
             />
           ))}
         </AnimatePresence>
         
-        {typingUsers[activeChat.id] && typingUsers[activeChat.id] !== user?.id && (
+        {typingUsers[activeChat.id] && typingUsers[activeChat.id] !== user.id && (
           <TypingIndicator contact={contact} />
         )}
         
@@ -315,7 +283,7 @@ export default function ChatArea() {
       </AnimatePresence>
 
       {/* Input Area */}
-      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4 relative">
+      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4">
         <form onSubmit={handleSendMessage} className="flex items-end gap-2">
           <div className="flex-1 relative">
             <Input
@@ -328,53 +296,25 @@ export default function ChatArea() {
             />
             
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <div className="relative">
-                <Button
-                  ref={emojiButtonRef}
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="w-6 h-6"
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                >
-                  <Smile className="w-4 h-4" />
-                </Button>
-
-                {/* FIXED: Proper emoji picker positioning */}
-                <AnimatePresence>
-                  {showEmojiPicker && (
-                    <>
-                      {/* Backdrop to close picker */}
-                      <div 
-                        className="fixed inset-0 z-[9998]" 
-                        onClick={() => setShowEmojiPicker(false)}
-                      />
-                      
-                      {/* Emoji picker positioned above the button */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute bottom-full right-0 mb-2 z-[9999]"
-                        style={{
-                          
-                          bottom: '100%',
-                          right: '0',
-                          marginBottom: '8px',
-                          zIndex: 9999
-                        }}
-                      >
-                        <EnhancedEmojiPicker 
-                          onEmojiSelect={handleEmojiSelect}
-                          onClose={() => setShowEmojiPicker(false)}
-                        />
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
-              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="w-6 h-6"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile className="w-4 h-4" />
+              </Button>
             </div>
+
+            {showEmojiPicker && (
+              <div className="absolute bottom-full right-0 mb-2">
+                <EnhancedEmojiPicker 
+                  onEmojiSelect={handleEmojiSelect}
+                  onClose={() => setShowEmojiPicker(false)}
+                />
+              </div>
+            )}
           </div>
 
           <Button
@@ -419,18 +359,17 @@ export default function ChatArea() {
           </Button>
         </form>
 
+        {showFileUpload && (
+          <div className="mt-2">
+            <FileUpload onFileSelect={handleFileUpload} />
+          </div>
+        )}
+
         {/* Auto-delete notice */}
         <div className="mt-2 text-xs text-muted-foreground text-center">
-          🔒 Messages auto-delete after {activeChat.settings?.deleteTimer ? Math.floor(activeChat.settings.deleteTimer / 1000) : 5}s • End-to-end encrypted
+          🔒 Messages auto-delete after {activeChat.settings?.deleteTimer / 1000}s • End-to-end encrypted
         </div>
       </div>
-
-      {/* File Upload Modal */}
-      <FileUpload
-        isOpen={showFileUpload}
-        onClose={() => setShowFileUpload(false)}
-        onFileSelect={handleFileUpload}
-      />
 
       {/* Chat Options Modal */}
       <ChatOptionsMenu
@@ -444,7 +383,7 @@ export default function ChatArea() {
       {/* Message Options Modal */}
       <MessageOptionsMenu
         message={showMessageOptions}
-        isOwn={showMessageOptions?.senderId === user?.id}
+        isOwn={showMessageOptions?.senderId === user.id}
         isOpen={!!showMessageOptions}
         onClose={() => setShowMessageOptions(null)}
         onReply={handleReply}
@@ -466,7 +405,7 @@ export default function ChatArea() {
       />
 
       {/* Voice Call Interface */}
-      {showVoiceCall && contact && (
+      {showVoiceCall && (
         <VoiceCallManager
           contact={contact}
           onEnd={() => {
