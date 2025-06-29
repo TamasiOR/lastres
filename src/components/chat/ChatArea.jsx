@@ -480,9 +480,3 @@ export default function ChatArea() {
     </div>
   );
 }
-element.style {
-    position: top;
-    z-index: 9999;
-    opacity: 1;
-    transform: none;
-}
