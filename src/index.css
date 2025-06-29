@@ -477,7 +477,7 @@ button[data-emoji] span,
 /* CRITICAL FIX: Chat emoji picker positioning */
 .chat-emoji-picker {
   position: absolute !important;
-  bottom: 100% !important;
+  bottom: 0 !important;
   right: 0 !important;
   z-index: 9999 !important;
   transform-origin: bottom right !important;
