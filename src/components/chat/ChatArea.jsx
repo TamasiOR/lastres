@@ -360,7 +360,7 @@ export default function ChatArea() {
                         style={{
                           position: 'absolute',
                           bottom: '0%',
-                          top: 100%,
+                          top: '100%',
                           right: '0',
                           marginBottom: '8px',
                           zIndex: 9999
