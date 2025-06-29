@@ -477,17 +477,16 @@ button[data-emoji] span,
 /* CRITICAL FIX: Chat emoji picker positioning */
 .chat-emoji-picker {
   position: absolute !important;
-  top: calc(100%) !important;
+  bottom: calc(100% + 8px) !important;
   right: 0 !important;
   z-index: 9999 !important;
   transform-origin: bottom right !important;
-  bottom: 0 !important;
 }
 
 /* Ensure chat emoji picker appears above all other content */
 .chat-emoji-backdrop {
   position: fixed !important;
-  top: 0% !important;
+  top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
@@ -534,10 +533,4 @@ button[data-emoji] span,
   text-rendering: optimizeQuality !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
-}
-element.style {
-    position: top;
-    z-index: 9999;
-    opacity: 1;
-    transform: none;
 }
