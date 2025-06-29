@@ -359,7 +359,7 @@ export default function ChatArea() {
                         className="absolute bottom-full right-0 mb-2 z-[9999]"
                         style={{
                           position: 'absolute',
-                          bottom: '100%',
+                          bottom: '0%',
                           right: '0',
                           marginBottom: '8px',
                           zIndex: 9999
