@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --background: 220 100% 6%;
+    --foreground: 220 5% 96%;
+    --card: 220 50% 8%;
+    --card-foreground: 220 5% 96%;
+    --popover: 220 50% 8%;
+    --popover-foreground: 220 5% 96%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 220 9% 89%;
+    --secondary: 220 30% 15%;
+    --secondary-foreground: 220 5% 96%;
+    --muted: 220 30% 15%;
+    --muted-foreground: 220 5% 60%;
+    --accent: 220 30% 15%;
+    --accent-foreground: 220 5% 96%;
+    --destructive: 0 84% 37%;
+    --destructive-foreground: 220 5% 96%;
+    --border: 220 30% 18%;
+    --input: 220 30% 18%;
+    --ring: 217 91% 60%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 220 100% 6%;
+    --foreground: 220 5% 96%;
+    --card: 220 50% 8%;
+    --card-foreground: 220 5% 96%;
+    --popover: 220 50% 8%;
+    --popover-foreground: 220 5% 96%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 220 9% 89%;
+    --secondary: 220 30% 15%;
+    --secondary-foreground: 220 5% 96%;
+    --muted: 220 30% 15%;
+    --muted-foreground: 220 5% 60%;
+    --accent: 220 30% 15%;
+    --accent-foreground: 220 5% 96%;
+    --destructive: 0 84% 37%;
+    --destructive-foreground: 220 5% 96%;
+    --border: 220 30% 18%;
+    --input: 220 30% 18%;
+    --ring: 217 91% 60%;
   }
 
   .theme-dark-green {
@@ -91,6 +91,116 @@
     --input: 220 30% 18%;
     --ring: 217 91% 60%;
   }
+
+  /* NEW: Gaming Red Theme - Inspired by the screenshot */
+  .theme-gaming-red {
+    --background: 0 20% 8%;
+    --foreground: 0 5% 96%;
+    --card: 0 30% 12%;
+    --card-foreground: 0 5% 96%;
+    --popover: 0 30% 12%;
+    --popover-foreground: 0 5% 96%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 9% 89%;
+    --secondary: 0 20% 18%;
+    --secondary-foreground: 0 5% 96%;
+    --muted: 0 20% 18%;
+    --muted-foreground: 0 5% 60%;
+    --accent: 0 20% 18%;
+    --accent-foreground: 0 5% 96%;
+    --destructive: 0 84% 37%;
+    --destructive-foreground: 0 5% 96%;
+    --border: 0 30% 22%;
+    --input: 0 3S0% 22%;
+    --ring: 0 84% 60%;
+  }
+
+  /* Gaming Red Theme Enhancements */
+  .theme-gaming-red {
+    /* Add subtle red glow effects */
+    --glow-primary: 0 84% 60%;
+    --glow-secondary: 0 60% 40%;
+  }
+
+  .theme-gaming-red .bg-card {
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(0 25% 10%) 100%);
+    border: 1px solid hsl(0 40% 25%);
+  }
+
+  .theme-gaming-red .bg-primary {
+    background: linear-gradient(135deg, hsl(0 84% 60%) 0%, hsl(0 70% 50%) 100%);
+    box-shadow: 0 0 20px hsla(0 84% 60% / 0.3);
+  }
+
+  .theme-gaming-red .bg-primary:hover {
+    background: linear-gradient(135deg, hsl(0 84% 65%) 0%, hsl(0 70% 55%) 100%);
+    box-shadow: 0 0 25px hsla(0 84% 60% / 0.4);
+  }
+
+  .theme-gaming-red .border-border {
+    border-color: hsl(0 40% 25%);
+  }
+
+  .theme-gaming-red .text-primary {
+    color: hsl(0 84% 65%);
+    text-shadow: 0 0 10px hsla(0 84% 60% / 0.3);
+  }
+
+  /* Gaming Red Theme - Header styling */
+  .theme-gaming-red .bg-card\/50 {
+    background: linear-gradient(135deg, hsla(0 30% 12% / 0.8) 0%, hsla(0 25% 10% / 0.9) 100%);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(0 40% 25%);
+  }
+
+  /* Gaming Red Theme - Message bubbles */
+  .theme-gaming-red .message-bubble {
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(0 25% 10%) 100%);
+    border: 1px solid hsl(0 40% 25%);
+    box-shadow: 0 4px 12px hsla(0 0% 0% / 0.3);
+  }
+
+  /* Gaming Red Theme - Buttons */
+  .theme-gaming-red .btn-enhanced {
+    background: linear-gradient(135deg, hsl(0 30% 15%) 0%, hsl(0 25% 12%) 100%);
+    border: 1px solid hsl(0 40% 25%);
+    transition: all 0.3s ease;
+  }
+
+  .theme-gaming-red .btn-enhanced:hover {
+    background: linear-gradient(135deg, hsl(0 40% 20%) 0%, hsl(0 35% 17%) 100%);
+    border-color: hsl(0 60% 35%);
+    box-shadow: 0 0 15px hsla(0 84% 60% / 0.2);
+  }
+
+  /* Gaming Red Theme - Scrollbars */
+  .theme-gaming-red .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, hsl(0 84% 60%) 0%, hsl(0 70% 50%) 100%);
+    border-radius: 4px;
+  }
+
+  .theme-gaming-red .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(0 84% 65%) 0%, hsl(0 70% 55%) 100%);
+  }
+
+  /* Gaming Red Theme - Input focus */
+  .theme-gaming-red .enhanced-input:focus {
+    border-color: hsl(0 84% 60%);
+    box-shadow: 0 0 0 3px hsla(0 84% 60% / 0.1), 0 0 15px hsla(0 84% 60% / 0.2);
+  }
+
+  /* Gaming Red Theme - Glow effects for special elements */
+  .theme-gaming-red .shadow-glow {
+    box-shadow: 0 0 20px hsla(0 84% 60% / 0.3);
+  }
+
+  .theme-gaming-red .shadow-glow-hover:hover {
+    box-shadow: 0 0 30px hsla(0 84% 60% / 0.5);
+  }
+
+  .theme-gaming-red .text-glow {
+    text-shadow: 0 0 10px hsla(0 84% 60% / 0.5);
+  }
 }
 
 @layer base {
@@ -101,6 +211,50 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
+  
+  /* CRITICAL FIX: Comprehensive emoji font rendering */
+  .emoji-display {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+    font-variant-emoji: emoji !important;
+    text-rendering: optimizeQuality !important;
+    -webkit-font-feature-settings: "liga" on, "clig" on, "calt" on !important;
+    font-feature-settings: "liga" on, "clig" on, "calt" on !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+  
+  /* Force emoji rendering for all potential emoji containers */
+  .emoji, 
+  [data-emoji], 
+  .emoji-text,
+  .emoji-reaction,
+  .reaction-emoji,
+  span[style*="emoji"],
+  .message-reactions span,
+  .reaction-button span,
+  button[class*="emoji"] span,
+  button[data-emoji] span,
+  .emoji-picker button span {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+    font-variant-emoji: emoji !important;
+    text-rendering: optimizeQuality !important;
+    -webkit-font-feature-settings: "liga" on, "clig" on, "calt" on !important;
+    font-feature-settings: "liga" on, "clig" on, "calt" on !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
 }
 
 @layer utilities {
@@ -110,6 +264,13 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+  
+  /* Enhanced emoji utility classes */
+  .emoji-font {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+    font-variant-emoji: emoji !important;
+    text-rendering: optimizeQuality !important;
   }
 }
 
@@ -277,4 +438,99 @@
 .enhanced-input:focus {
   @apply ring-2 ring-primary/50 border-primary/50;
   box-shadow: 0 0 0 3px rgba(var(--primary), 0.1);
+}
+
+/* CRITICAL: Force emoji rendering in all reaction elements with enhanced specificity */
+.message-reactions button span,
+.reaction-button span,
+.emoji-reaction span,
+.emoji-display,
+[class*="reaction"] span,
+[class*="emoji"] span {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+  font-variant-emoji: emoji !important;
+  text-rendering: optimizeQuality !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Ensure emoji buttons render properly with enhanced styling */
+button[class*="emoji"] span,
+button[data-emoji] span,
+.emoji-picker button span {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+  font-variant-emoji: emoji !important;
+  text-rendering: optimizeQuality !important;
+  font-size: inherit !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* CRITICAL FIX: Chat emoji picker positioning */
+.chat-emoji-picker {
+  position: absolute !important;
+  bottom: calc(100% + 8px) !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  transform-origin: bottom right !important;
+}
+
+/* Ensure chat emoji picker appears above all other content */
+.chat-emoji-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9998 !important;
+  pointer-events: auto !important;
+}
+
+/* Chat input area positioning context */
+.chat-input-container {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.chat-input-emoji-button {
+  position: relative !important;
+  z-index: 11 !important;
+}
+
+/* CRITICAL: Enhanced emoji reaction display fixes */
+.message-reactions .emoji-display,
+.reaction-emoji,
+.emoji-reaction {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+  font-variant-emoji: emoji !important;
+  text-rendering: optimizeQuality !important;
+  -webkit-font-feature-settings: "liga" on, "clig" on, "calt" on !important;
+  font-feature-settings: "liga" on, "clig" on, "calt" on !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Force proper emoji rendering in all contexts */
+* [style*="emoji"],
+* .emoji-display,
+* .emoji-reaction {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
+  font-variant-emoji: emoji !important;
+  text-rendering: optimizeQuality !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
 }
