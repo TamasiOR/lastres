@@ -46,6 +46,7 @@ export default function ChatArea() {
   const [chatSettings, setChatSettings] = useState({});
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const emojiButtonRef = useRef(null);
 
   const contact = contacts.find(c => 
     activeChat?.participants.includes(c.id) && c.id !== user?.id
@@ -221,7 +222,7 @@ export default function ChatArea() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background relative">
       {/* Chat Header */}
       <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
@@ -314,7 +315,7 @@ export default function ChatArea() {
       </AnimatePresence>
 
       {/* Input Area */}
-      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4">
+      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4 relative">
         <form onSubmit={handleSendMessage} className="flex items-end gap-2">
           <div className="flex-1 relative">
             <Input
@@ -327,25 +328,53 @@ export default function ChatArea() {
             />
             
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="w-6 h-6"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              >
-                <Smile className="w-4 h-4" />
-              </Button>
-            </div>
+              <div className="relative">
+                <Button
+                  ref={emojiButtonRef}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="w-6 h-6"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                >
+                  <Smile className="w-4 h-4" />
+                </Button>
 
-            {showEmojiPicker && (
-              <div className="absolute bottom-full right-0 mb-2">
-                <EnhancedEmojiPicker 
-                  onEmojiSelect={handleEmojiSelect}
-                  onClose={() => setShowEmojiPicker(false)}
-                />
+                {/* FIXED: Proper emoji picker positioning */}
+                <AnimatePresence>
+                  {showEmojiPicker && (
+                    <>
+                      {/* Backdrop to close picker */}
+                      <div 
+                        className="fixed inset-0 z-[9998]" 
+                        onClick={() => setShowEmojiPicker(false)}
+                      />
+                      
+                      {/* Emoji picker positioned above the button */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute bottom-full right-0 mb-2 z-[9999]"
+                        style={{
+                          position: 'absolute',
+                          bottom: '100%',
+                          right: '0',
+                          marginBottom: '8px',
+                          zIndex: 9999
+                        }}
+                      >
+                        <EnhancedEmojiPicker 
+                          onEmojiSelect={handleEmojiSelect}
+                          onClose={() => setShowEmojiPicker(false)}
+                        />
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
               </div>
-            )}
+            </div>
           </div>
 
           <Button
