@@ -361,7 +361,7 @@ export default function ChatArea() {
                           position: 'top',
                           
                           right: '0',
-                          marginBottom: '8px',
+                          
                           zIndex: 9999
                         }}
                       >
