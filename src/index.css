@@ -486,7 +486,7 @@ button[data-emoji] span,
 /* Ensure chat emoji picker appears above all other content */
 .chat-emoji-backdrop {
   position: fixed !important;
-  top: 0 !important;
+  top: 100% !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
