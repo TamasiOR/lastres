@@ -111,7 +111,7 @@
     --destructive: 0 84% 37%;
     --destructive-foreground: 0 5% 96%;
     --border: 0 30% 22%;
-    --input: 0 3S0% 22%;
+    --input: 0 30% 22%;
     --ring: 0 84% 60%;
   }
 
@@ -440,47 +440,21 @@
   box-shadow: 0 0 0 3px rgba(var(--primary), 0.1);
 }
 
-/* CRITICAL: Force emoji rendering in all reaction elements with enhanced specificity */
-.message-reactions button span,
-.reaction-button span,
-.emoji-reaction span,
-.emoji-display,
-[class*="reaction"] span,
-[class*="emoji"] span {
-  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
-  font-variant-emoji: emoji !important;
-  text-rendering: optimizeQuality !important;
-  display: inline-block !important;
-  vertical-align: middle !important;
-  line-height: 1 !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  text-decoration: none !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
+/* CRITICAL FIX: Chat emoji picker positioning with conflict resolution */
+.chat-emoji-picker-container {
+  position: relative !important;
+  z-index: 1000 !important;
 }
 
-/* Ensure emoji buttons render properly with enhanced styling */
-button[class*="emoji"] span,
-button[data-emoji] span,
-.emoji-picker button span {
-  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", "Android Emoji", sans-serif !important;
-  font-variant-emoji: emoji !important;
-  text-rendering: optimizeQuality !important;
-  font-size: inherit !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-}
-
-/* CRITICAL FIX: Chat emoji picker positioning */
 .chat-emoji-picker {
   position: absolute !important;
-  bottom: calc(100% + 8px) !important;
+  bottom: calc(100% + 12px) !important;
   right: 0 !important;
-  z-index: 9999 !important;
+  z-index: 10000 !important;
   transform-origin: bottom right !important;
+  max-width: 320px !important;
+  width: max-content !important;
+  pointer-events: auto !important;
 }
 
 /* Ensure chat emoji picker appears above all other content */
@@ -490,19 +464,88 @@ button[data-emoji] span,
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  z-index: 9998 !important;
+  z-index: 9999 !important;
   pointer-events: auto !important;
+  background: transparent !important;
 }
 
 /* Chat input area positioning context */
 .chat-input-container {
   position: relative !important;
-  z-index: 10 !important;
+  z-index: 100 !important;
 }
 
 .chat-input-emoji-button {
   position: relative !important;
-  z-index: 11 !important;
+  z-index: 101 !important;
+}
+
+/* Prevent conflicts with other modals and overlays */
+.chat-area-container {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Override any conflicting z-index values */
+.chat-emoji-picker * {
+  z-index: inherit !important;
+}
+
+/* Ensure proper stacking context for chat components */
+.chat-header {
+  z-index: 20 !important;
+}
+
+.chat-messages {
+  z-index: 10 !important;
+}
+
+.chat-input {
+  z-index: 30 !important;
+}
+
+/* Status page specific emoji picker positioning - separate from chat */
+.status-emoji-picker {
+  position: absolute !important;
+  bottom: calc(100% + 8px) !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+}
+
+/* CRITICAL: Status viewer button fixes */
+.status-viewer-buttons {
+  pointer-events: auto !important;
+  z-index: 30 !important;
+}
+
+.status-viewer-buttons button {
+  pointer-events: auto !important;
+  z-index: 31 !important;
+}
+
+.status-viewer-reactions {
+  pointer-events: auto !important;
+  z-index: 40 !important;
+}
+
+.status-viewer-reactions button {
+  pointer-events: auto !important;
+  z-index: 41 !important;
+}
+
+/* Ensure status viewer overlay doesn't block buttons */
+.status-viewer-overlay {
+  pointer-events: none !important;
+}
+
+/* Status viewer action area should allow clicks */
+.status-action-area {
+  pointer-events: auto !important;
+  z-index: 20 !important;
+}
+
+.status-action-area * {
+  pointer-events: auto !important;
 }
 
 /* CRITICAL: Enhanced emoji reaction display fixes */
@@ -533,4 +576,72 @@ button[data-emoji] span,
   text-rendering: optimizeQuality !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* CRITICAL FIX: Prevent emoji picker from being cut off by parent containers */
+.chat-emoji-picker-wrapper {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.chat-emoji-picker-wrapper * {
+  overflow: visible !important;
+}
+
+/* Ensure emoji picker doesn't get clipped by chat container */
+.chat-container {
+  overflow: visible !important;
+}
+
+.chat-input-area {
+  overflow: visible !important;
+}
+
+/* Fix for emoji picker appearing behind other elements */
+.emoji-picker-portal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 10000 !important;
+}
+
+.emoji-picker-portal > * {
+  pointer-events: auto !important;
+}
+
+/* Ensure proper layering for all chat components */
+.chat-area {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.chat-area .emoji-picker {
+  z-index: 10001 !important;
+}
+
+/* Fix potential conflicts with framer-motion animations */
+.emoji-picker-motion {
+  will-change: transform, opacity !important;
+  backface-visibility: hidden !important;
+}
+
+/* Ensure emoji picker buttons are clickable */
+.emoji-picker button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  user-select: none !important;
+}
+
+/* Fix for emoji picker in different themes */
+.theme-gaming-red .chat-emoji-picker {
+  border: 1px solid hsl(0 40% 25%) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% / 0.4), 0 0 20px hsla(0 84% 60% / 0.2) !important;
+}
+
+.theme-dark-blue .chat-emoji-picker {
+  border: 1px solid hsl(220 30% 18%) !important;
+  box-shadow: 0 8px 32px hsla(220 0% 0% / 0.4), 0 0 20px hsla(217 91% 60% / 0.2) !important;
 }

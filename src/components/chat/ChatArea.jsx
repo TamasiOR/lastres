@@ -47,6 +47,7 @@ export default function ChatArea() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const emojiButtonRef = useRef(null);
+  const emojiPickerRef = useRef(null);
 
   const contact = contacts.find(c => 
     activeChat?.participants.includes(c.id) && c.id !== user?.id
@@ -61,6 +62,24 @@ export default function ChatArea() {
       inputRef.current.focus();
     }
   }, [activeChat]);
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showEmojiPicker && 
+          emojiPickerRef.current && 
+          !emojiPickerRef.current.contains(event.target) &&
+          emojiButtonRef.current &&
+          !emojiButtonRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmojiPicker]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -222,9 +241,9 @@ export default function ChatArea() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background relative">
+    <div className="h-full flex flex-col bg-background chat-area-container">
       {/* Chat Header */}
-      <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4">
+      <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4 chat-header">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -280,7 +299,7 @@ export default function ChatArea() {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 chat-messages">
         <AnimatePresence>
           {activeChat.messages && activeChat.messages.map((msg, index) => (
             <MessageBubble
@@ -314,10 +333,10 @@ export default function ChatArea() {
         )}
       </AnimatePresence>
 
-      {/* Input Area */}
-      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4 relative">
+      {/* Input Area - CRITICAL FIX: Improved emoji picker positioning */}
+      <div className="border-t border-border bg-card/50 backdrop-blur-sm p-4 chat-input chat-input-container">
         <form onSubmit={handleSendMessage} className="flex items-end gap-2">
-          <div className="flex-1 relative">
+          <div className="flex-1 relative chat-input-area">
             <Input
               ref={inputRef}
               value={message}
@@ -328,42 +347,41 @@ export default function ChatArea() {
             />
             
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <div className="relative">
+              {/* CRITICAL FIX: Emoji picker with proper positioning and conflict resolution */}
+              <div className="chat-emoji-picker-container">
                 <Button
                   ref={emojiButtonRef}
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="w-6 h-6"
+                  className="w-6 h-6 chat-input-emoji-button"
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 >
                   <Smile className="w-4 h-4" />
                 </Button>
 
-                {/* FIXED: Proper emoji picker positioning */}
+                {/* Emoji picker with improved positioning */}
                 <AnimatePresence>
                   {showEmojiPicker && (
                     <>
-                      {/* Backdrop to close picker */}
+                      {/* Backdrop to close picker - positioned in portal */}
                       <div 
-                        className="fixed inset-0 z-[9998]" 
+                        className="chat-emoji-backdrop"
                         onClick={() => setShowEmojiPicker(false)}
                       />
                       
                       {/* Emoji picker positioned above the button */}
                       <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        ref={emojiPickerRef}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute bottom-full right-0 mb-2 z-[9999]"
-                        style={{
-                          position: 'absolute',
-                          bottom: '100%',
-                          right: '0',
-                          marginBottom: '8px',
-                          zIndex: 9999
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ 
+                          duration: 0.2,
+                          ease: [0.4, 0.0, 0.2, 1]
                         }}
+                        className="chat-emoji-picker emoji-picker-motion"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <EnhancedEmojiPicker 
                           onEmojiSelect={handleEmojiSelect}
