@@ -478,14 +478,15 @@ button[data-emoji] span,
 .chat-emoji-picker {
  /* position: absolute !important;*/
  /* bottom: calc(100% + 8px) !important; */
-  right: 0 !important;
+  top: calc(100% + 8px) important;
+   right: 0 !important;
   z-index: 9999 !important;
   transform-origin: bottom right !important;
 }
 
 /* Ensure chat emoji picker appears above all other content */
 .chat-emoji-backdrop {
-  /*position: fixed !important;*/
+  position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
