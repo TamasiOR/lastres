@@ -3,9 +3,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { UserPlus, MoreVertical, Star } from 'lucide-react';
+import { UserPlus, MoreVertical, Star, UserCheck, Settings } from 'lucide-react';
 
-export default function ChannelMembers({ members, showMembers }) {
+export default function ChannelMembers({ 
+  members, 
+  showMembers, 
+  onInviteMembers, 
+  onManageMembers 
+}) {
   if (!showMembers) return null;
 
   return (
@@ -20,17 +25,26 @@ export default function ChannelMembers({ members, showMembers }) {
           <h3 className="font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Members ({members.length})
           </h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => toast({
-              title: "🚧 Invite Members",
-              description: "Member invitations aren't implemented yet—but don't worry! You can request them in your next prompt! 🚀"
-            })}
-            className="hover:bg-primary/20 transition-all duration-200"
-          >
-            <UserPlus className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onInviteMembers}
+              className="hover:bg-primary/20 transition-all duration-200"
+              title="Invite Members"
+            >
+              <UserPlus className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onManageMembers}
+              className="hover:bg-primary/20 transition-all duration-200"
+              title="Manage Member Requests"
+            >
+              <UserCheck className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -71,8 +85,8 @@ export default function ChannelMembers({ members, showMembers }) {
                 size="icon"
                 className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all duration-200"
                 onClick={() => toast({
-                  title: "🚧 Member Options",
-                  description: "Member management isn't implemented yet—but don't worry! You can request it in your next prompt! 🚀"
+                  title: "Member Options",
+                  description: "Member management options coming soon!"
                 })}
               >
                 <MoreVertical className="w-3 h-3" />

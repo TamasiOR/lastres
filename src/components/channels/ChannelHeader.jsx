@@ -29,6 +29,8 @@ export default function ChannelHeader({
   onToggleMembers,
   onShowChannelInfo,
   onShowAdvancedSettings
+  onInviteMembers,
+  onManageMembers
 }) {
   return (
     <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4">
@@ -96,6 +98,7 @@ export default function ChannelHeader({
           size="icon"
           onClick={onToggleMembers}
           className="transition-all duration-200 hover:bg-accent"
+          title="Toggle Members Panel"
         >
           <Users className="w-4 h-4" />
         </Button>

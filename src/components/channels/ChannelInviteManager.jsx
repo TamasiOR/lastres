@@ -90,7 +90,7 @@ export default function ChannelInviteManager({
   };
 
   const generateInviteCode = () => {
-    return Math.random().toString(36).substr(2, 8).toUpperCase();
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
   };
 
   const generateInviteLink = () => {

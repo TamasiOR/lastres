@@ -9,7 +9,7 @@ import ChannelView from '@/components/channels/ChannelView';
 import ChannelSubscriptionManager from '@/components/channels/ChannelSubscriptionManager';
 import AdvancedChannelSettings from '@/components/channels/AdvancedChannelSettings';
 import NotificationSettings from '@/components/notifications/NotificationSettings';
-import { Search, Plus, Hash, Users, Bell, BellOff, Settings, ArrowLeft } from 'lucide-react';
+import { Search, Plus, Hash, Users, Bell, BellOff, Settings, ArrowLeft, UserPlus } from 'lucide-react';
 
 export default function Channels() {
   const { user } = useAuth();
@@ -418,10 +418,27 @@ export default function Channels() {
                             e.stopPropagation();
                             setShowAdvancedSettings(channel);
                           }}
+                          title="Advanced Channel Settings"
                         >
                           <Settings className="w-4 h-4" />
                         </Button>
                       )}
+                      
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="w-8 h-8"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast({
+                            title: "Invite Members",
+                            description: "Open the channel to access invite features"
+                          });
+                        }}
+                        title="Invite Members"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                      </Button>
                       
                       <Button
                         variant="secondary"

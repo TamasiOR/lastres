@@ -572,7 +572,13 @@ export default function ChannelInfoPanel({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="w-8 h-8"
+                onClick={() => {
+                  if (onInviteMembers) {
+                    onInviteMembers();
+                  } else {
+                    generateInviteLink();
+                  }
+                }}
                 onClick={() => setShowMemberOptions(showMemberOptions === member.id ? null : member.id)}
               >
                 <MoreVertical className="w-4 h-4" />
