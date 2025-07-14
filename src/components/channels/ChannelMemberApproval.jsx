@@ -39,6 +39,10 @@ export default function ChannelMemberApproval({
     }
   }, [channel]);
 
+  const generateInviteCode = () => {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+  };
+
   const loadPendingMembers = () => {
     // Load pending member requests
     const savedRequests = localStorage.getItem(`channel-member-requests-${channel.id}`);
