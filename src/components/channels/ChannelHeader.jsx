@@ -28,7 +28,7 @@ export default function ChannelHeader({
   onToggleMute,
   onToggleMembers,
   onShowChannelInfo,
-  onShowAdvancedSettings
+  onShowAdvancedSettings,
   onInviteMembers,
   onManageMembers
 }) {
